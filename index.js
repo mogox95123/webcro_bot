@@ -7,6 +7,30 @@ const token = '6326528266:AAE42YJUpp7UCqJhb9KMVUtnIw_uuWGpZX4';
 
 const bot = new TelegramBot(token, { polling: true });
 
+bot.onText(/\/delete/, (msg) => {
+    const chatId = msg.chat.id;
+
+    user.checkingSubscriptionStatus(msg.chat.id, (error, results) => {
+        if(error){
+            bot.sendMessage(msg.chat.id, "Sorry, there was an error retrieving your subscription information.\nContact: @webcro_help");
+            console.log(error)
+        } else {
+            if(results.length > 0){
+                if(user.getUser(msg.chat.id, (error, results) => {
+                    if(error){
+                        bot.sendMessage(msg.chat.id, "Sorry, there was an error retrieving your subscription information.\nContact: @webcro_help");
+                        console.log(error)
+                    } else {
+                        bot.sendMessage(chatId, `The notification to DELETE the page as been sent to admin !\n\nReturn to /dashboard`);
+                    }
+                }));
+                
+                
+            }
+        } 
+    });
+});
+
 bot.onText(/\/name (.+)/, (msg, match) => {
     const chatId = msg.chat.id;
     const userInput = match[1]; // The captured input
@@ -175,7 +199,9 @@ bot.onText(/\/dashboard/, (msg) => {
                             second: '2-digit'
                           })  : 'No active subscription ';
                         let domainMessage = results[0].domain ? `Your domain name: ${results[0].domain}\n` : 'Your domain name: no domain\n';
-                        let pageStatus = results[0].domain ? `Active page: 1\n\n` : `Active page: 0\n\n`
+                        let pageStatus = results[0].domain ? `Active page: 1\n\n` : `Active page: 0\n\n`;
+                        let updateDomain = results[0].domain ? `Update a domain name for a page: '/name REPLACE BY YOUR DOMAIN NAME'` : ``;
+                        let updateApi = results[0].domain ? `Update a api key for a page: '/api REPLACE BY YOUR API KEY'` : ``;
                         let message = `Username: ${msg.chat.username}\n`+
                         `Your User ID: ${msg.chat.id}\n`+
                         `${domainMessage}`+
@@ -183,7 +209,8 @@ bot.onText(/\/dashboard/, (msg) => {
                         `${pageStatus}`+
                         `Create a page: /create\n`+
                         `Delete a page: /delete\n`+
-                        `Update a domain name for a page: /domain\n\n`+
+                        `${updateDomain}\n`+
+                        `${updateApi}\n\n`+
                         `If you need help, send your User ID and your request thank you !\n@webcro_help`;
                         bot.sendMessage(msg.chat.id, message);
                     }
