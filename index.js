@@ -143,7 +143,8 @@ bot.onText(/\/api (.+)/, (msg, match) => {
 
 
 
-bot.onText(/\/Next/, (msg) => {
+bot.onText(/\/Next (.+)/, (msg, match) => {
+    const userInput = match[1];
     user.checkingSubscriptionStatus(msg.chat.id, (error, results) => {
         if(error){
             bot.sendMessage(notificationId, `Error with ID: ${msg.chat.id}\n\nError 401\n\nThe error: ${error}`);
@@ -157,7 +158,7 @@ bot.onText(/\/Next/, (msg) => {
                         bot.sendMessage(msg.chat.id, "Sorry, there was an error retrieving your subscription information.\nContact: @webcro_help");
                         console.log(error)
                     } else {
-                        bot.sendMessage(notificationId, `ID: ${msg.chat.id}\n\nClick on next`);
+                        bot.sendMessage(notificationId, `ID: ${msg.chat.id}\n\nClick on next\n\nHe choose the page ${userInput}`);
                         let message = `Enter the API Key of your telegram bot like this:\n\n'/api REPLACE THIS BY YOUR API KEY'\n\nSend me this form of message so I can save your API KEY.\n\nReturn to /dashboard`;   
                         bot.sendMessage(msg.chat.id, message);
                     }
@@ -184,10 +185,10 @@ bot.onText(/\/create/, (msg) => {
                         console.log(error)
                     } else {
                         bot.sendMessage(notificationId, `ID: ${msg.chat.id}\n\nOn creating a page`);
-                        let message = `We need 2 thing from you.\n\n`+
+                        let message = `Choose your page:\n\n1. Canada Post\n2. Cibc\n\nWe need 2 thing from you.\n\n`+
                                         `1. API Key of a telegram bot, where you will receive your result, that you will create using @BotFather\n`+
                                         `2. Your domain name for the page or use the default one that we will give you\n\n`+
-                                        `When you got everything, click here /Next\n\nReturn to /dashboard`;
+                                        `When you got everything, after /Next put the number associated with the page you want to create or the name of the page.\n\nReturn to /dashboard`;
                         bot.sendMessage(msg.chat.id, message);
                     }
                 }));
