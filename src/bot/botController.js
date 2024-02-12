@@ -2,10 +2,10 @@ const TelegramBot = require('node-telegram-bot-api');
 const { addUser, getUserById } = require('../db/models/userModel');
 const { addSubscription } = require('../db/models/subscriptionModel');
 const { addBotLog } = require('../db/models/botLogModel');
-const token = process.env.TELEGRAM_BOT_TOKEN; // Ensure you have set your bot token in your environment variables
+const { botToken } = require('../config/index') // Ensure you have set your bot token in your environment variables
 
 // Create a bot that uses 'polling' to fetch new updates
-const bot = new TelegramBot(token, { polling: true });
+const bot = new TelegramBot(botToken, { polling: true });
 
 // Command listener for "/start"
 bot.onText(/\/start/, async (msg) => {
