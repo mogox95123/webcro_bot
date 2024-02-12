@@ -10,7 +10,7 @@ const bot = new TelegramBot(botToken, { polling: true });
 
 // Command listener for "/start"
 bot.on('message', async (msg) => {
-    if(msg != '/subscribe'){
+    if(msg.text != '/subscribe'){
     const chatId = msg.chat.id;
     const username = msg.chat.username;
     let user = await getUserById(chatId);
