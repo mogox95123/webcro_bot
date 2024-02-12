@@ -1,6 +1,6 @@
 -- Create Users table
 CREATE TABLE Users (
-    UserID SERIAL PRIMARY KEY,
+    UserID BIGINT PRIMARY KEY,
     Username VARCHAR(255) NOT NULL,
     CreationDate TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     EmailRender VARCHAR(255),
@@ -10,7 +10,7 @@ CREATE TABLE Users (
 
 -- Create Subscriptions table
 CREATE TABLE Subscriptions (
-    SubscriptionID SERIAL PRIMARY KEY,
+    SubscriptionID VARCHAR(255) PRIMARY KEY,
     Price NUMERIC(10, 2) NOT NULL CHECK (Price IN (30, 120, 300)),
     Duration INT NOT NULL CHECK (Duration IN (1, 7, 31)),
     IsActive BOOLEAN DEFAULT TRUE
@@ -19,8 +19,8 @@ CREATE TABLE Subscriptions (
 -- Create UserSubscriptions table
 CREATE TABLE UserSubscriptions (
     UserSubscriptionID SERIAL PRIMARY KEY,
-    UserID INT REFERENCES Users(UserID),
-    SubscriptionID INT REFERENCES Subscriptions(SubscriptionID),
+    UserID BIGINT REFERENCES Users(UserID),
+    SubscriptionID VARCHAR(255) REFERENCES Subscriptions(SubscriptionID),
     StartDate TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     EndDate TIMESTAMP WITH TIME ZONE,
     Status VARCHAR(50) CHECK (Status IN ('Active', 'Expired', 'Inactive'))
@@ -38,7 +38,7 @@ CREATE TABLE Payments (
 -- Create BotLogs table
 CREATE TABLE BotLogs (
     LogID SERIAL PRIMARY KEY,
-    UserID INT REFERENCES Users(UserID),
+    UserID BIGINT REFERENCES Users(UserID),
     Action VARCHAR(255) NOT NULL,
     Timestamp TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     Details TEXT
