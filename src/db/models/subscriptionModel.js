@@ -1,14 +1,14 @@
 const { query } = require('../index'); // Adjust the import path based on your project structure
 
 // Create a new subscription type
-const addSubscription = async (price, duration) => {
+const addSubscription = async (SubscriptionID, price, duration) => {
     const sql = `
-        INSERT INTO Subscriptions (Price, Duration, IsActive)
-        VALUES ($1, $2, TRUE)
+        INSERT INTO Subscriptions (SubscriptionID, Price, Duration, IsActive)
+        VALUES ($1, $2, $3, TRUE)
         RETURNING *;
     `;
     try {
-        const { rows } = await query(sql, [price, duration]);
+        const { rows } = await query(sql, [SubscriptionID, price, duration]);
         return rows[0];
     } catch (error) {
         console.error('Error adding subscription:', error);

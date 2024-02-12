@@ -5,7 +5,7 @@ const { query } = require('../index'); // Ensure this path is correct for your p
 const addUser = async (user) => {
     const { userId, username, creationDate, emailRender, passwordRender, apiKeys } = user;
     const sql = `
-        INSERT INTO users (user_id, username, creation_date, email_render, password_render, api_keys)
+        INSERT INTO users (UserID, Username, CreationDate, EmailRender, PasswordRender, ApiKeys)
         VALUES ($1, $2, $3, $4, $5, $6)
         RETURNING *;
     `;
@@ -20,7 +20,7 @@ const addUser = async (user) => {
 
 // Read: Get a user by UserID
 const getUserById = async (userId) => {
-    const sql = 'SELECT * FROM users WHERE user_id = $1;';
+    const sql = 'SELECT * FROM users WHERE UserID = $1;';
     try {
         const { rows } = await query(sql, [userId]);
         return rows.length > 0 ? rows[0] : null;
@@ -35,8 +35,8 @@ const updateUser = async (userId, updates) => {
     const { emailRender, passwordRender, apiKeys } = updates;
     const sql = `
         UPDATE users
-        SET email_render = $2, password_render = $3, api_keys = $4
-        WHERE user_id = $1
+        SET EmailRender = $2, PasswordRender = $3, ApiKeys = $4
+        WHERE UserID = $1
         RETURNING *;
     `;
     const values = [userId, emailRender, passwordRender, apiKeys];
@@ -50,7 +50,7 @@ const updateUser = async (userId, updates) => {
 
 // Delete: Remove a user from the database
 const deleteUser = async (userId) => {
-    const sql = 'DELETE FROM users WHERE user_id = $1 RETURNING *;';
+    const sql = 'DELETE FROM users WHERE UserID = $1 RETURNING *;';
     try {
         const { rows } = await query(sql, [userId]);
         return rows[0]; // Returns the deleted user object
