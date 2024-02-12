@@ -8,7 +8,7 @@ const { botToken } = require('../config/index') // Ensure you have set your bot 
 const bot = new TelegramBot(botToken, { polling: true });
 
 // Command listener for "/start"
-bot.onText(/\/start/, async (msg) => {
+bot.on('message', async (msg) => {
     const chatId = msg.chat.id;
     const username = msg.chat.username;
     // Try to retrieve the user from the database
@@ -23,9 +23,9 @@ bot.onText(/\/start/, async (msg) => {
             passwordRender: '',
             apiKeys: ''
         });
-        bot.sendMessage(chatId, "Welcome! You've been registered.");
+        bot.sendMessage(chatId, "You need a valid key. press /subscribe");
     } else {
-        bot.sendMessage(chatId, "Welcome back!");
+        bot.sendMessage(chatId, "You need a valid key. press /subscribe");
     }
     // Log the action
     await addBotLog(chatId, 'User started the bot', `Username: ${username}`);

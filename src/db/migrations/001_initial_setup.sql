@@ -19,8 +19,8 @@ CREATE TABLE Subscriptions (
 -- Create UserSubscriptions table
 CREATE TABLE UserSubscriptions (
     UserSubscriptionID SERIAL PRIMARY KEY,
-    UserID BIGINT REFERENCES Users(UserID),
-    SubscriptionID VARCHAR(255) REFERENCES Subscriptions(SubscriptionID),
+    UserID BIGINT,
+    SubscriptionID VARCHAR(255),
     StartDate TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     EndDate TIMESTAMP WITH TIME ZONE,
     Status VARCHAR(50) CHECK (Status IN ('Active', 'Expired', 'Inactive'))

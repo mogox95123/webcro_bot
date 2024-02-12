@@ -10,13 +10,7 @@ pool.connect()
     .then(() => console.log('Connected to database successfully'))
     .catch((err) => console.error('Database connection failed', err));
 
-// Example of using a bot command defined in botController.js
-bot.onText(/\/echo (.+)/, (msg, match) => {
-    const chatId = msg.chat.id;
-    const resp = match[1]; // The captured "echo" text
-    bot.sendMessage(chatId, `Echo: ${resp}`);
-});
-
+    
 // Notify the console that the bot has started
 console.log('Bot has been started...');
 
