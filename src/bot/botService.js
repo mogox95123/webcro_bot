@@ -16,9 +16,9 @@ async function handleNewSubscription(userId, subscriptionId) {
             return { success: false, message: "Subscription type not found." };
         }
 
-        subscription.status = false;
+        subscription.isactive = false;
 
-        await updateSubscription(subscription.subscriptionid, subscription.price, subscription.duration, subscription.status)
+        await updateSubscription(subscription.subscriptionid, subscription.price, subscription.duration, subscription.isactive)
 
         // Assume function to calculate endDate based on subscription duration
         const endDate = calculateEndDate(subscription.duration);
@@ -37,7 +37,7 @@ async function handleNewSubscription(userId, subscriptionId) {
 async function getUserSubscriptionStatus(userId) {
     try {
         const subscriptions = await getSubscriptionsByUserId(userId);
-        const activeSubscription = subscriptions.find(sub => sub.Status === 'Active');
+        const activeSubscription = subscriptions.find(sub => sub.status === 'Active');
         if (activeSubscription) {
             const bool = isSubscriptionActive(subscriptions.endDate)
             if(bool){
