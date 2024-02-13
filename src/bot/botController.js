@@ -37,7 +37,7 @@ bot.on('message', async (msg) => {
             const res = await getUserSubscriptionStatus(chatId)
             if (res.success) {
                 if (res.active) {
-                    bot.sendMessage(chatId, `Details: ${res.details}\nPress /dashboard`);
+                    bot.sendMessage(chatId, `Press /dashboard`);
                 } else {
                     bot.sendMessage(chatId, "You need a valid key. press /subscribe");
                 }
