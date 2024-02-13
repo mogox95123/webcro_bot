@@ -8,9 +8,11 @@ const axios = require('axios');
 // Function to handle new subscriptions
 async function handleNewSubscription(userId, subscriptionId) {
     try {
+        console.log(subscriptionId)
         const subscriptions = await getAllSubscriptions();
+        console.log(subscriptions)
         const subscription = subscriptions.find(sub => sub.subscriptionId === subscriptionId);
-
+        console.log(subscription)
         if (!subscription) {
             return { success: false, message: "Subscription type not found." };
         }
