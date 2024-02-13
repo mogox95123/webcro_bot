@@ -34,7 +34,7 @@ bot.on('message', async (msg) => {
                 console.log(resHandler.message)
                 await addBotLog(chatId, '[ERROR 103]', `Username: ${username}`);
             }
-            const res = await getUserSubscriptionStatus(user.userId)
+            const res = await getUserSubscriptionStatus(chatId)
             if (res.success) {
                 if (res.active) {
                     bot.sendMessage(chatId, `Details: ${res.details}\nPress /dashboard`);
