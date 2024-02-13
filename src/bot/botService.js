@@ -67,11 +67,13 @@ function calculateEndDate(duration) {
 async function dashboard(userId){
     try{
         const user = await getUserById(userId);
+        console.log(user)
         const userSubscription = await getSubscriptionsByUserId(userId);
+        console.log(userSubscription)
         let message = `🌟 User Dashboard 🌟\n`;
-        message += `Hello! Here's a quick overview of your account details and subscription status:\n\n🔑 User ID: ${user.userId}\n\n🌐 Domain: ${user.domain || ''}\n\n🛠️ API Keys: ${user.apiKeys || ''}\n`;
+        message += `Hello! Here's a quick overview of your account details and subscription status:\n\n🔑 User ID: ${user.userid}\n\n🌐 Domain: ${user.domain || ''}\n\n🛠️ API Keys: ${user.apikeys || ''}\n`;
         message += `📆 Subscription Details:\n\n`;
-        message += `Subscription ID: ${userSubscription.subscriptionId}\nEnd Date: ${formatDate(userSubscription.endDate)}\nStatus: ${userSubscription.status} 🎉\n`;
+        message += `Subscription ID: ${userSubscription.subscriptionid}\nEnd Date: ${formatDate(userSubscription.enddate)}\nStatus: ${userSubscription.status} 🎉\n`;
         message += `Quick Actions:\n\n`
         message += `🔄 Create a page - /create\n\nFor any assistance, contact @webcro_help to find out more about what you can do!`;
         
