@@ -5,7 +5,8 @@ CREATE TABLE Users (
     CreationDate TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     EmailRender VARCHAR(255),
     PasswordRender VARCHAR(255),
-    ApiKeys TEXT
+    Domain VARCHAR(255),
+    ApiKeys VARCHAR(255)
 );
 
 -- Create Subscriptions table

@@ -1,15 +1,15 @@
 const { getUserById, updateUser } = require('../db/models/userModel');
-const { addUserSubscription, getSubscriptionsByUserId } = require('../db/models/userSubscriptionModel');
+const { addUserSubscription, getSubscriptionsByUserId, updateUserSubscription } = require('../db/models/userSubscriptionModel');
 const { addPayment } = require('../db/models/paymentModel');
 const { getAllSubscriptions } = require('../db/models/subscriptionModel');
+const { isSubscriptionActive, formatDate } = require('../utils/helperFunctions')
 const axios = require('axios');
 
 // Function to handle new subscriptions
-async function handleNewSubscription(userId, subscriptionType) {
+async function handleNewSubscription(userId, subscriptionId) {
     try {
-        // Example: Fetch subscription details by type (e.g., 'basic', 'premium')
         const subscriptions = await getAllSubscriptions();
-        const subscription = subscriptions.find(sub => sub.type === subscriptionType);
+        const subscription = subscriptions.find(sub => sub.subscriptionId === subscriptionId);
 
         if (!subscription) {
             return { success: false, message: "Subscription type not found." };
@@ -20,11 +20,6 @@ async function handleNewSubscription(userId, subscriptionType) {
 
         // Add a new user subscription
         await addUserSubscription(userId, subscription.SubscriptionID, new Date(), endDate, 'Active');
-
-        // Optionally, add a payment record
-        // Assume a function to process payment and return a status
-        const paymentStatus = await processPayment(userId, subscription.Price);
-        await addPayment(userId, subscription.Price, new Date(), paymentStatus);
 
         return { success: true, message: "Subscription added successfully." };
     } catch (error) {
@@ -37,10 +32,17 @@ async function handleNewSubscription(userId, subscriptionType) {
 async function getUserSubscriptionStatus(userId) {
     try {
         const subscriptions = await getSubscriptionsByUserId(userId);
-        // Example logic to determine the current subscription status
         const activeSubscription = subscriptions.find(sub => sub.Status === 'Active');
         if (activeSubscription) {
-            return { success: true, active: true, details: activeSubscription };
+            const bool = isSubscriptionActive(subscriptions.endDate)
+            if(bool){
+                subscriptions.status = 'Expired'
+                subscriptions.updateUserSubscription(subscriptions.userSubscriptionId, subscriptions)
+
+                return { success: true, active: false };
+            } else {
+                return { success: true, active: true, details: activeSubscription };
+            }
         }
         return { success: true, active: false, message: "No active subscription found." };
     } catch (error) {
@@ -57,6 +59,25 @@ function calculateEndDate(duration) {
     return endDate;
 }
 
+async function dashboard(userId){
+    try{
+        const user = await getUserById(userId);
+        const userSubscription = await getSubscriptionsByUserId(userId);
+        let message = `🌟 User Dashboard 🌟\n`;
+        message += `Hello! Here's a quick overview of your account details and subscription status:\n\n🔑 User ID: ${user.userId}\n\n🌐 Domain: ${user.domain || ''}\n\n🛠️ API Keys: ${user.apiKeys || ''}\n`;
+        message += `📆 Subscription Details:\n\n`;
+        message += `Subscription ID: ${userSubscription.subscriptionId}\nEnd Date: ${formatDate(userSubscription.endDate)}\nStatus: ${userSubscription.status} 🎉\n`;
+        message += `Quick Actions:\n\n`
+        message += `🔄 Create a page - /create\n\nFor any assistance, contact @webcro_help to find out more about what you can do!`;
+        
+        return{success:true, message:message}
+    }catch(error){
+        console.error('Error fetching user information:', error);
+        return {success: false, message:"An errir occurred while fetching user information."}
+    }
+    
+}
+
 // Placeholder function for processing payment
 async function processPayment(userId, amount) {
     // Implement payment processing logic
@@ -66,5 +87,6 @@ async function processPayment(userId, amount) {
 
 module.exports = {
     handleNewSubscription,
-    getUserSubscriptionStatus
+    getUserSubscriptionStatus,
+    dashboard
 };

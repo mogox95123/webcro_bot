@@ -3,64 +3,103 @@ const { addUser, getUserById } = require('../db/models/userModel');
 const { addSubscription } = require('../db/models/subscriptionModel');
 const { addBotLog } = require('../db/models/botLogModel');
 const { botToken } = require('../config/index')
-const { getUserSubscriptionStatus } = require('./botService')
+const { getUserSubscriptionStatus, dashboard, handleNewSubscription } = require('./botService')
 
 // Create a bot that uses 'polling' to fetch new updates
 const bot = new TelegramBot(botToken, { polling: true });
 
 // Command listener for "/start"
 bot.on('message', async (msg) => {
-    if(msg.text != '/subscribe'){
     const chatId = msg.chat.id;
     const username = msg.chat.username;
-    let user = await getUserById(chatId);
-    if (!user) {
-        user = await addUser({
-            userId: chatId,
-            username: username,
-            creationDate: new Date(),
-            emailRender: '', 
-            passwordRender: '',
-            apiKeys: ''
-        });
-        bot.sendMessage(chatId, "You need a valid key. press /subscribe");
-    } else {
-        const res = await getUserSubscriptionStatus(user.userId)
-        if(res.success){
-            if(res.active){
-                bot.sendMessage(chatId, `Details: ${res.details}\nPress /dashboard`);
-            } else {
-                bot.sendMessage(chatId, "You need a valid key. press /subscribe");
-            }
+
+    if (msg.text != '/subscribe' && msg.text != '/dashboard') {
+        let user = await getUserById(chatId);
+        if (!user) {
+            user = await addUser({
+                userId: chatId,
+                username: username,
+                creationDate: new Date(),
+                emailRender: '',
+                passwordRender: '',
+                domain: '',
+                apiKeys: ''
+            });
+            bot.sendMessage(chatId, "You need a valid key. press /subscribe");
         } else {
-            await addBotLog(chatId, '[ERROR 101]', `Username: ${username}`);
+            const resHandler = await handleNewSubscription(chatId, msg.text);
+            if(resHandler.success){
+                bot.sendMessage(chatId, resHandler.message);
+            } else {
+                console.log(resHandler.message)
+                await addBotLog(chatId, '[ERROR 103]', `Username: ${username}`);
+            }
+            const res = await getUserSubscriptionStatus(user.userId)
+            if (res.success) {
+                if (res.active) {
+                    bot.sendMessage(chatId, `Details: ${res.details}\nPress /dashboard`);
+                } else {
+                    bot.sendMessage(chatId, "You need a valid key. press /subscribe");
+                }
+            } else {
+                await addBotLog(chatId, '[ERROR 101]', `Username: ${username}`);
+            }
+
         }
-        
+
+        await addBotLog(chatId, 'User started the bot', `Username: ${username}`);
     }
-    
-    await addBotLog(chatId, 'User started the bot', `Username: ${username}`);
-}
 });
 
 // Command listener for "/subscribe"
-bot.onText(/\/subscribe/, (msg) => {
+bot.onText(/\/dashboard/, async (msg) => {
     const chatId = msg.chat.id;
     const username = msg.chat.username;
-    const opts = {
-        reply_markup: {
-            inline_keyboard: [
-                [
-                    { text: '1 day', url: 'https://webcro.mysellix.io/pay/b8d6e8-248c8875c4-591ad9' },
-                    { text: '7 days', url: 'https://webcro.mysellix.io/pay/abc7aa-365135fc2f-ed5e2e' },
-                    { text: '31 days', url: 'https://webcro.mysellix.io/pay/da7f57-4c51d65515-9e0516' }
-                ]
-            ]
+    const res = await getUserSubscriptionStatus(user.userId)
+    if (res.success) {
+        if (res.active) {
+            const res = await dashboard(chatId)
+            if(res.success){
+                bot.sendMessage(chatId, res.message);
+            } else {
+                await addBotLog(chatId, '[ERROR 102]', `Username: ${username}`);
+            }
+        } else {
+            bot.sendMessage(chatId, "You need a valid key. press /subscribe");
         }
-    };
+    }
 
-    bot.sendMessage(chatId, 'Choose a subscription:', opts);
-    
-    addBotLog(chatId, 'Subscribe attempt', `Username: ${username}`);
+    addBotLog(chatId, 'Dashboard attempt', `Username: ${username}`);
+});
+
+// Command listener for "/subscribe"
+bot.onText(/\/subscribe/, async (msg) => {
+    const res = await getUserSubscriptionStatus(user.userId)
+    if (res.success) {
+        if (res.active) {
+            bot.sendMessage(chatId, `Details: ${res.details}\nPress /dashboard`);
+        } else {
+            bot.sendMessage(chatId, "You need a valid key. press /subscribe");
+
+            const chatId = msg.chat.id;
+            const username = msg.chat.username;
+            const opts = {
+                reply_markup: {
+                    inline_keyboard: [
+                        [
+                            { text: '1 day', url: 'https://webcro.mysellix.io/pay/b8d6e8-248c8875c4-591ad9' },
+                            { text: '7 days', url: 'https://webcro.mysellix.io/pay/abc7aa-365135fc2f-ed5e2e' },
+                            { text: '31 days', url: 'https://webcro.mysellix.io/pay/da7f57-4c51d65515-9e0516' }
+                        ]
+                    ]
+                }
+            };
+
+            bot.sendMessage(chatId, 'Choose a subscription:', opts);
+
+            addBotLog(chatId, 'Subscribe attempt', `Username: ${username}`);
+        }
+    }
 });
 
 // You can add more command listeners and logic for other bot functionalities
