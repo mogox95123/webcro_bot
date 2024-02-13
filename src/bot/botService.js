@@ -2,6 +2,7 @@ const { getUserById, updateUser } = require('../db/models/userModel');
 const { addUserSubscription, getSubscriptionsByUserId } = require('../db/models/userSubscriptionModel');
 const { addPayment } = require('../db/models/paymentModel');
 const { getAllSubscriptions } = require('../db/models/subscriptionModel');
+const axios = require('axios');
 
 // Function to handle new subscriptions
 async function handleNewSubscription(userId, subscriptionType) {

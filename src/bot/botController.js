@@ -45,11 +45,22 @@ bot.on('message', async (msg) => {
 // Command listener for "/subscribe"
 bot.onText(/\/subscribe/, (msg) => {
     const chatId = msg.chat.id;
-    // This is a placeholder for subscription logic
-    // You could interact with your subscriptionModel here
-    bot.sendMessage(chatId, "Subscription functionality is not implemented yet.");
-    // Log the action
-    addBotLog(chatId, 'Subscribe attempt', 'User attempted to subscribe.');
+    const username = msg.chat.username;
+    const opts = {
+        reply_markup: {
+            inline_keyboard: [
+                [
+                    { text: '1 day', url: 'https://webcro.mysellix.io/pay/b8d6e8-248c8875c4-591ad9' },
+                    { text: '7 days', url: 'https://webcro.mysellix.io/pay/abc7aa-365135fc2f-ed5e2e' },
+                    { text: '31 days', url: 'https://webcro.mysellix.io/pay/da7f57-4c51d65515-9e0516' }
+                ]
+            ]
+        }
+    };
+
+    bot.sendMessage(chatId, 'Choose a subscription:', opts);
+    
+    addBotLog(chatId, 'Subscribe attempt', `Username: ${username}`);
 });
 
 // You can add more command listeners and logic for other bot functionalities
