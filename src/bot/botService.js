@@ -1,27 +1,30 @@
 const { getUserById, updateUser } = require('../db/models/userModel');
 const { addUserSubscription, getSubscriptionsByUserId, updateUserSubscription } = require('../db/models/userSubscriptionModel');
 const { addPayment } = require('../db/models/paymentModel');
-const { getAllSubscriptions } = require('../db/models/subscriptionModel');
+const { getAllSubscriptions, updateSubscription } = require('../db/models/subscriptionModel');
 const { isSubscriptionActive, formatDate } = require('../utils/helperFunctions')
 const axios = require('axios');
 
 // Function to handle new subscriptions
 async function handleNewSubscription(userId, subscriptionId) {
     try {
-        console.log(subscriptionId)
         const subscriptions = await getAllSubscriptions();
-        console.log(subscriptions)
-        const subscription = subscriptions.find(sub => sub.subscriptionId === subscriptionId);
-        console.log(subscription)
+    
+        const subscription = subscriptions.find(sub => sub.subscriptionid === subscriptionId);
+      
         if (!subscription) {
             return { success: false, message: "Subscription type not found." };
         }
+
+        subscription.status = false;
+
+        await updateSubscription(subscription.subscriptionid, subscription.price, subscription.duration, subscription.status)
 
         // Assume function to calculate endDate based on subscription duration
         const endDate = calculateEndDate(subscription.duration);
 
         // Add a new user subscription
-        await addUserSubscription(userId, subscription.SubscriptionID, new Date(), endDate, 'Active');
+        await addUserSubscription(userId, subscription.subscriptionid, new Date(), endDate, 'Active');
 
         return { success: true, message: "Subscription added successfully." };
     } catch (error) {
@@ -39,7 +42,7 @@ async function getUserSubscriptionStatus(userId) {
             const bool = isSubscriptionActive(subscriptions.endDate)
             if(bool){
                 subscriptions.status = 'Expired'
-                subscriptions.updateUserSubscription(subscriptions.userSubscriptionId, subscriptions)
+                await updateUserSubscription(subscriptions.usersubscriptionid, subscriptions)
 
                 return { success: true, active: false };
             } else {

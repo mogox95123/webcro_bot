@@ -81,7 +81,6 @@ bot.onText(/\/subscribe/, async (msg) => {
         if (res.active) {
             bot.sendMessage(chatId, `Details: ${res.details}\nPress /dashboard`);
         } else {
-            bot.sendMessage(chatId, "You need a valid key. press /subscribe");
             const opts = {
                 reply_markup: {
                     inline_keyboard: [
