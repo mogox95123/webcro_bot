@@ -79,7 +79,7 @@ bot.onText(/\/subscribe/, async (msg) => {
     const res = await getUserSubscriptionStatus(chatId)
     if (res.success) {
         if (res.active) {
-            bot.sendMessage(chatId, `Details: ${res.details}\nPress /dashboard`);
+            bot.sendMessage(chatId, `Press /dashboard`);
         } else {
             const opts = {
                 reply_markup: {

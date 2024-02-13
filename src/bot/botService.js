@@ -12,7 +12,7 @@ async function handleNewSubscription(userId, subscriptionId) {
     
         const subscription = subscriptions.find(sub => sub.subscriptionid === subscriptionId);
       
-        if (!subscription) {
+        if (!subscription || subscription.isactive != true) {
             return { success: false, message: "Subscription type not found." };
         }
 
