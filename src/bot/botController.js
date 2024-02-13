@@ -74,15 +74,14 @@ bot.onText(/\/dashboard/, async (msg) => {
 
 // Command listener for "/subscribe"
 bot.onText(/\/subscribe/, async (msg) => {
-    const res = await getUserSubscriptionStatus(user.userId)
+    const chatId = msg.chat.id;
+    const username = msg.chat.username;
+    const res = await getUserSubscriptionStatus(chatId)
     if (res.success) {
         if (res.active) {
             bot.sendMessage(chatId, `Details: ${res.details}\nPress /dashboard`);
         } else {
             bot.sendMessage(chatId, "You need a valid key. press /subscribe");
-
-            const chatId = msg.chat.id;
-            const username = msg.chat.username;
             const opts = {
                 reply_markup: {
                     inline_keyboard: [
