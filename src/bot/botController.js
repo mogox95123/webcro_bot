@@ -55,7 +55,7 @@ bot.on('message', async (msg) => {
 bot.onText(/\/dashboard/, async (msg) => {
     const chatId = msg.chat.id;
     const username = msg.chat.username;
-    const res = await getUserSubscriptionStatus(user.userId)
+    const res = await getUserSubscriptionStatus(chatId)
     if (res.success) {
         if (res.active) {
             const res = await dashboard(chatId)
