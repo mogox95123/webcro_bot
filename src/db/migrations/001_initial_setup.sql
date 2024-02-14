@@ -6,7 +6,9 @@ CREATE TABLE Users (
     EmailRender VARCHAR(255),
     PasswordRender VARCHAR(255),
     Domain VARCHAR(255),
-    ApiKeys VARCHAR(255)
+    ApiKeys VARCHAR(255),
+    vpsip VARCHAR(255),
+    vpspassword VARCHAR(255)
 );
 
 -- Create Subscriptions table

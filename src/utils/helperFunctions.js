@@ -1,6 +1,10 @@
 // Utility function to format dates into a more readable string
 function formatDate(date) {
-    return date.toISOString().split('T')[0]; // Simple format: YYYY-MM-DD
+    let isoString = date.toISOString();
+    let datePart = isoString.split('T')[0]; // YYYY-MM-DD
+    let timePart = isoString.split('T')[1].split(':'); // HH:mm:ss.sssZ
+    return `${datePart} ${timePart[0]}:${timePart[1]}`; // YYYY-MM-DD HH:mm
+
 }
 
 // Function to validate email addresses

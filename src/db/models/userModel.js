@@ -3,13 +3,13 @@ const { query } = require('../index'); // Ensure this path is correct for your p
 
 // Create: Add a new user
 const addUser = async (user) => {
-    const { userId, username, creationDate, emailRender, passwordRender, domain, apiKeys } = user;
+    const { userId, username, creationDate, emailRender, passwordRender, domain, apiKeys, vpsip, vpspassword } = user;
     const sql = `
-        INSERT INTO users (UserID, Username, CreationDate, EmailRender, PasswordRender, domain, ApiKeys)
-        VALUES ($1, $2, $3, $4, $5, $6, $7)
+        INSERT INTO users (UserID, Username, CreationDate, EmailRender, PasswordRender, domain, ApiKeys, vpsip, vpspassword)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
         RETURNING *;
     `;
-    const values = [userId, username, creationDate, emailRender, passwordRender, domain, apiKeys];
+    const values = [userId, username, creationDate, emailRender, passwordRender, domain, apiKeys, vpsip, vpspassword];
     try {
         const { rows } = await query(sql, values);
         return rows[0];
@@ -32,14 +32,14 @@ const getUserById = async (userId) => {
 // Update: Modify user details
 const updateUser = async (userId, updates) => {
     // Example for email and password update, adjust according to your needs
-    const { emailRender, passwordRender, domain, apiKeys } = updates;
+    const { emailRender, passwordRender, domain, apiKeys, vpsip, vpspassword } = updates;
     const sql = `
         UPDATE users
-        SET EmailRender = $2, PasswordRender = $3, domain = $4, ApiKeys = $5
+        SET EmailRender = $2, PasswordRender = $3, domain = $4, ApiKeys = $5, vpsip = $6, vpspassword = $7
         WHERE UserID = $1
         RETURNING *;
     `;
-    const values = [userId, emailRender, passwordRender, domain ,apiKeys];
+    const values = [userId, emailRender, passwordRender, domain ,apiKeys, vpsip, vpspassword];
     try {
         const { rows } = await query(sql, values);
         return rows[0];
